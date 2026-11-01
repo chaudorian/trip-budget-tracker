@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Budget voyage</title>
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#12332e"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Budget voyage">
+<title>Budget tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{--bg:#eef3f1;--sf:#fff;--ink:#12332e;--mut:#5d7771;--ln:#d5e0dc;--ac:#0f766e;--acx:#fff;--exp:#c2410c;--inc:#15803d;--warn:#b45309;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -12,9 +11,9 @@
 body{background:var(--bg);color:var(--ink);font:16px/1.4 "Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100vh;padding-bottom:116px}
 main{max-width:560px;margin:0 auto;padding:16px}
 h2{font-size:1.05rem;margin:20px 0 8px}
-.hero{background:var(--ink);color:var(--bg);border-radius:20px;padding:18px}
+.hero{background:var(--ac);color:var(--acx);border-radius:20px;padding:18px}
 .hero small{opacity:.75}.hero .big{font-size:2.3rem;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:2px 0 10px}
-.bar{height:8px;border-radius:8px;background:rgba(255,255,255,.2);overflow:hidden}.bar i{display:block;height:100%;background:#5eead4}
+.bar{height:8px;border-radius:8px;background:rgba(127,127,127,.35);overflow:hidden}.bar i{display:block;height:100%;background:var(--acx)}
 .sel{display:flex;gap:8px;align-items:center;margin-bottom:12px}
 select,input,textarea{font:inherit;color:var(--ink);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;width:100%}
 label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
@@ -48,6 +47,11 @@ select{-webkit-appearance:none;appearance:none;background-image:url("data:image/
 .pv{padding:10px 12px;font-weight:700}
 .tx span small{display:block;font-weight:400}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(104px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ink);color:var(--bg);padding:12px 14px;border-radius:12px;z-index:40;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.sh{position:relative}
+.x{position:absolute;top:10px;right:12px;width:36px;height:36px;border:0;border-radius:50%;background:var(--sf);color:var(--mut);font-size:1.5rem;line-height:1;cursor:pointer}
+.sw{display:flex;gap:12px;margin-top:12px}
+.sw button{width:36px;height:36px;border-radius:50%;border:3px solid var(--sf);box-shadow:0 0 0 1px var(--ln);cursor:pointer}
+.sw button.on{box-shadow:0 0 0 2px var(--ink)}
 </style></head><body>
 <main id="app"></main>
 <div id="navw"></div>
@@ -65,9 +69,32 @@ function pickList(q){q=norm(q.trim());var l=CURL.filter(function(x){return !q||x
 function pickSel(c){form.cur=c;$("#pb").textContent=curBtn();$("#pk").hidden=true;if(RATES[c]!=null)$("#v_r").value=RATES[c];$("#rl").textContent="1 € = ? "+c}
 function toast(m){var t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},4500)}
 window.alert=toast;
-function ask(m,fn){var o=document.createElement("div");o.className="ov";o.style.zIndex=30;o.innerHTML='<div class="sh"><p></p><button class="btn s" id="ay">Supprimer</button><button class="btn" id="an">Annuler</button></div>';o.querySelector("p").textContent=m;document.body.appendChild(o);o.querySelector("#an").onclick=function(){o.remove()};o.querySelector("#ay").onclick=function(){o.remove();fn()}}
+function ask(m,fn,y,n){var o=document.createElement("div");o.className="ov";o.style.zIndex=30;o.innerHTML='<div class="sh"><p></p><button class="btn s" id="ay"></button><button class="btn" id="an"></button></div>';o.querySelector("p").textContent=m;o.querySelector("#ay").textContent=y||"Supprimer";o.querySelector("#an").textContent=n||"Annuler";document.body.appendChild(o);o.querySelector("#an").onclick=function(){o.remove()};o.querySelector("#ay").onclick=function(){o.remove();fn()}}
 function ic(p){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'}
 var ICO={tx:ic('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),dash:ic('<path d="M3 3v18h18"/><path d="M8 16v-4M13 16V8M18 16v-7"/>'),trips:ic('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>')};
+function P(n,l,d){var k=["bg","sf","ink","mut","ln","ac","acx"],o={n:n,l:{},d:{}};k.forEach(function(x,i){o.l[x]=l[i];o.d[x]=d[i]});return o}
+var PAL={
+ocean:P("Océan",["#eef3f1","#ffffff","#12332e","#5d7771","#d5e0dc","#0f766e","#ffffff"],["#0c1a18","#142724","#e3f0ec","#8fa9a2","#26403b","#2dd4bf","#06201c"]),
+sun:P("Soleil",["#f6efe9","#ffffff","#3a2214","#86684f","#e6d8cb","#c2410c","#ffffff"],["#1c120c","#2a1b12","#f5e6da","#b79a84","#46301f","#fb923c","#2a1206"]),
+lav:P("Lavande",["#f1eff8","#ffffff","#2b2350","#6d6791","#dcd8ee","#6d28d9","#ffffff"],["#130f24","#1d1736","#ebe7fb","#a59fc8","#352c5c","#a78bfa","#1a1033"]),
+rose:P("Cerise",["#f9eff3","#ffffff","#4a1530","#8d5a73","#ecd5df","#be185d","#ffffff"],["#1f0d16","#2e1422","#fbe7f0","#c096ab","#4d2339","#f472b6","#2a0a1a"]),
+slate:P("Ardoise",["#eef1f5","#ffffff","#1e293b","#64748b","#d8dee8","#2563eb","#ffffff"],["#0b1220","#131c2e","#e5ecf8","#94a3b8","#243049","#60a5fa","#07142c"])
+};
+var TH={mode:"auto",pal:"ocean"};
+try{var tt=JSON.parse(localStorage.getItem("bv-theme"));if(tt&&PAL[tt.pal]&&tt.mode)TH=tt}catch(e){}
+function isDark(){return TH.mode==="dark"||(TH.mode==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
+function applyTheme(){var dk=isDark(),v=PAL[TH.pal][dk?"d":"l"],r=document.documentElement;for(var k in v)r.style.setProperty("--"+k,v[k]);r.style.setProperty("--exp",dk?"#fb923c":"#c2410c");r.style.setProperty("--inc",dk?"#4ade80":"#15803d");r.style.colorScheme=dk?"dark":"light";var m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.bg}
+function setTheme(k,v){TH[k]=v;try{localStorage.setItem("bv-theme",JSON.stringify(TH))}catch(e){}applyTheme();render()}
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(TH.mode==="auto"){applyTheme();render()}})}catch(e){}
+applyTheme();
+function themeCard(){
+  return '<h2>Apparence</h2><div class="card"><div class="seg">'+[["auto","Auto"],["light","Jour"],["dark","Nuit"]].map(function(a){return '<button class="'+(TH.mode===a[0]?"on":"")+'" onclick="setTheme(\'mode\',\''+a[0]+'\')">'+a[1]+'</button>'}).join("")+'</div><div class="sw">'+Object.keys(PAL).map(function(k){return '<button class="'+(TH.pal===k?"on":"")+'" style="background:'+PAL[k].l.ac+'" aria-label="'+PAL[k].n+'" title="'+PAL[k].n+'" onclick="setTheme(\'pal\',\''+k+'\')"></button>'}).join("")+'</div><div style="color:var(--mut);font-size:.85rem;margin-top:8px">Thème : '+PAL[TH.pal].n+'</div></div>';
+}
+function vTrips(){return vTrips0()+themeCard()}
+function remEurTxt(){var t=trip();if(!t||!t.rate)return"";var l=txs(),v=t.budget/(t.rate0||t.rate)+eurTot(l.filter(function(x){return x.type==="inc"}))-eurTot(l.filter(function(x){return x.type==="exp"}));return "≈ "+n2(v)+" €"}
+function snap(){var o=$("#ov");if(!o)return"";var a=[];o.querySelectorAll("input,select,textarea").forEach(function(e){if(["f_r","v_r","pq"].indexOf(e.id)<0)a.push(e.value)});return a.join("|")+"|"+(form.cur||"")+"|"+(form.type||"")}
+function base(){var o=$("#ov");if(o)o._b=snap()}
+function tryClose(){var o=$("#ov");if(!o)return;if(snap()===o._b)return closeSh();ask("Abandonner la saisie ? Les données entrées seront perdues.",closeSh,"Abandonner","Continuer")}
 var CAT={exp:["Alimentation","Restaurant","Achat","Loisir","Transport","Logement","Santé","Divers"],inc:["Rechargement"]};
 var COL=["#16a34a","#f59e0b","#8b5cf6","#ec4899","#0ea5e9","#14b8a6","#ef4444","#94a3b8","#22c55e"];
 var ALL=CAT.exp.concat(CAT.inc);
@@ -95,7 +122,7 @@ function stats(){var l=txs(),sp=sum(l.filter(function(x){return x.type==="exp"})
 function render(){
   if(chart){chart.destroy();chart=null}
   var app=$("#app"),nav=$("#navw");
-  if(!S.trips.length){nav.innerHTML="";app.innerHTML='<div class="empty"><h2>Bienvenue</h2><p>Crée ton premier voyage pour suivre ton budget en espèces.</p><button class="btn" onclick="tripForm()">Créer un voyage</button></div>';return}
+  if(!S.trips.length){nav.innerHTML="";app.innerHTML='<div class="empty"><h2>Bienvenue dans Budget tracker</h2><p>Crée ton premier voyage pour suivre ton budget en espèces.</p><button class="btn" onclick="tripForm()">Créer un voyage</button></div>';return}
   if(!trip())S.cur=S.trips[0].id;
   var h='<div class="sel"><select onchange="S.cur=this.value;save();render()">'+S.trips.map(function(t){return '<option value="'+t.id+'"'+(t.id===S.cur?" selected":"")+'>'+esc(t.name)+'</option>'}).join("")+'</select></div>';
   h+=tab==="tx"?vTx():tab==="dash"?vDash():vTrips();
@@ -105,7 +132,7 @@ function render(){
 }
 function vTx(){
   var t=trip(),s=stats(),l=txs(),tot=t.budget+s.inc,pct=tot>0?Math.max(0,Math.min(100,s.rem/tot*100)):0;
-  var h='<div class="hero"><small>Budget restant</small><div class="big">'+money(s.rem)+'</div><div class="bar"><i style="width:'+pct+'%"></i></div><small>Dépensé '+money(s.sp)+' sur '+money(tot)+'</small></div>';
+  var h='<div class="hero"><small>Budget restant</small><div class="big">'+money(s.rem)+'</div>'+(remEurTxt()?'<small style="display:block;margin:-4px 0 10px">'+remEurTxt()+' restants</small>':"")+'<div class="bar"><i style="width:'+pct+'%"></i></div><small>Dépensé '+money(s.sp)+' sur '+money(tot)+'</small></div>';
   if(!l.length)return h+'<div class="empty">Aucune transaction. Appuie sur + pour ajouter ta première dépense.</div>';
   var last="";
   l.forEach(function(x){
@@ -118,7 +145,7 @@ function vDash(){
   var t=trip(),s=stats(),l=txs().filter(function(x){return x.type==="exp"}),td=today();
   var end=t.end&&td>t.end?t.end:td,el=Math.max(1,diff(t.start,end)+1);
   var left=t.end&&td<=t.end?Math.max(1,diff(td,t.end)+1):0;
-  var h='<div class="kpis"><div class="k"><small>Total dépensé</small><b>'+money(s.sp)+'</b></div><div class="k"><small>Budget restant</small><b>'+money(s.rem)+'</b></div><div class="k"><small>Moyenne par jour</small><b>'+money(td<t.start?0:s.sp/el)+'</b></div><div class="k"><small>'+(left?"Conseillé par jour ("+left+" j)":"Rechargé")+'</small><b>'+money(left?Math.max(0,s.rem)/left:s.inc)+'</b></div><div class="k"><small>Dépensé en euros</small><b>'+n2(eurTot(l))+' €</b></div><div class="k"><small>Taux actuel</small><b>1 € = '+n2(t.rate||0)+' '+esc(t.cur)+'</b></div></div>';
+  var h='<div class="kpis"><div class="k"><small>Total dépensé</small><b>'+money(s.sp)+'</b></div><div class="k"><small>Budget restant</small><b>'+money(s.rem)+'</b>'+(remEurTxt()?'<small>'+remEurTxt()+'</small>':"")+'</div><div class="k"><small>Moyenne par jour</small><b>'+money(td<t.start?0:s.sp/el)+'</b></div><div class="k"><small>'+(left?"Conseillé par jour ("+left+" j)":"Rechargé")+'</small><b>'+money(left?Math.max(0,s.rem)/left:s.inc)+'</b></div><div class="k"><small>Dépensé en euros</small><b>'+n2(eurTot(l))+' €</b></div><div class="k"><small>Taux actuel</small><b>1 € = '+n2(t.rate||0)+' '+esc(t.cur)+'</b></div></div>';
   h+='<h2>Dépenses par catégorie</h2><div class="seg">'+[["day","Jour"],["week","Semaine"],["month","Mois"]].map(function(p){return '<button class="'+(per===p[0]?"on":"")+'" onclick="per=\''+p[0]+'\';render()">'+p[1]+'</button>'}).join("")+'</div>';
   h+='<div class="card" style="margin-top:10px">'+(l.length?'<canvas id="ch"></canvas>':'<div class="empty">Pas encore de dépense à afficher.</div>')+'</div>';
   var k=key(td,per),cur=l.filter(function(x){return key(x.date,per)===k});
@@ -137,12 +164,12 @@ function drawChart(){
   var cs=getComputedStyle(document.documentElement),tc=cs.getPropertyValue("--mut").trim(),gc=cs.getPropertyValue("--ln").trim();
   chart=new Chart(cv,{type:"bar",data:{labels:keys.map(function(k){return lab(k,per)}),datasets:CAT.exp.map(function(c){return{label:c,backgroundColor:ccol(c),data:keys.map(function(k){return sum(l.filter(function(x){return x.cat===c&&key(x.date,per)===k}))})}})},options:{responsive:true,scales:{x:{stacked:true,ticks:{color:tc},grid:{display:false}},y:{stacked:true,ticks:{color:tc},grid:{color:gc}}},plugins:{legend:{labels:{color:tc,boxWidth:10}}}}});
 }
-function vTrips(){
+function vTrips0(){
   var h='<button class="btn" style="margin:0 0 12px" onclick="tripForm()">Nouveau voyage</button>';
   S.trips.forEach(function(t){h+='<div class="card"><b>'+esc(t.name)+'</b><br><small style="color:var(--mut)">'+D(t.start).toLocaleDateString("fr-FR")+' → '+D(t.end).toLocaleDateString("fr-FR")+' · '+esc(t.cur)+' · 1 € = '+n2(t.rate||0)+' · budget '+n2(t.budget)+'</small><button class="btn s" style="margin-top:10px" onclick="tripForm(\''+t.id+'\')">Modifier</button></div>'});
   return h;
 }
-function sheet(h){var o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML='<div class="sh">'+h+'</div>';o.addEventListener("click",function(e){if(e.target===o)closeSh()});document.body.appendChild(o)}
+function sheet(h){var o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML='<div class="sh"><button class="x" type="button" onclick="tryClose()" aria-label="Fermer">×</button>'+h+'</div>';o.addEventListener("click",function(e){if(e.target===o)tryClose()});document.body.appendChild(o)}
 function closeSh(){var o=$("#ov");if(o)o.remove()}
 function txForm(id){
   var x=id?S.tx.find(function(a){return a.id===id}):null,t=trip();
@@ -152,14 +179,11 @@ function txForm(id){
   '<label>Intitulé</label><input id="f_t" value="'+esc(x?x.title:"")+'">'+
   '<div class="row2"><div><label>Montant ('+esc(t.cur)+')</label><input id="f_a" inputmode="decimal" value="'+(x?x.amount:"")+'" oninput="prev()"></div><div><label>Date</label><input id="f_d" type="date" value="'+(x?x.date:today())+'"></div></div>'+
   '<div class="row2"><div><label>Taux : 1 € = ? '+esc(t.cur)+'</label><input id="f_r" inputmode="decimal" value="'+r+'" oninput="prev()"></div><div><label>Équivalent en euros</label><div class="pv" id="pv">—</div></div></div>'+
-  '<small id="rs" style="color:var(--mut)"></small><label>Catégorie</label><select id="f_c"></select><label>Note</label><textarea id="f_n" rows="2">'+esc(x?x.note:"")+'</textarea>'+
+  '<label>Catégorie</label><select id="f_c"></select><label>Note</label><textarea id="f_n" rows="2">'+esc(x?x.note:"")+'</textarea>'+
   '<button class="btn" onclick="saveTx()">Enregistrer</button>'+(x?'<button class="btn s" onclick="delTx(\''+id+'\')">Supprimer</button>':""));
-  setType(form.type,x?x.cat:null);prev();if(!x)fetchRate();
+  setType(form.type,x?x.cat:null);prev();base();
 }
-function prev(){if(!$("#pv"))return;var a=pf($("#f_a").value),r=pf($("#f_r").value);$("#pv").textContent=a>0&&r>0?"≈ "+n2(a/r)+" €":"—"}
-var RURLS=["https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json","https://latest.currency-api.pages.dev/v1/currencies/eur.json"],RC=null;
-function liveRates(){if(RC&&Date.now()-RC.t<6e5)return Promise.resolve(RC);var p=Promise.reject();RURLS.forEach(function(u){p=p.catch(function(){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()})})});return p.then(function(j){RC={t:Date.now(),d:j.date,m:j.eur};return RC})}
-function fetchRate(){var c=trip().cur;if($("#rs"))$("#rs").textContent="Récupération du taux en ligne…";liveRates().then(function(R){var v=R.m[c.toLowerCase()];if(!(v>0))throw 0;if($("#f_r")){$("#f_r").value=+v.toPrecision(8);$("#rs").textContent="Taux du "+R.d+" récupéré en ligne."}}).catch(function(){if($("#rs"))$("#rs").textContent="Taux en ligne indisponible : dernier taux du voyage conservé, modifiable."}).then(prev)}
+function prev(){var a=pf($("#f_a").value),r=pf($("#f_r").value);$("#pv").textContent=a>0&&r>0?"≈ "+n2(a/r)+" €":"—"}
 function setType(t,c){
   form.type=t;
   $("#ty").innerHTML=[["exp","Dépense"],["inc","Revenu"]].map(function(a){return '<button class="'+(t===a[0]?"on":"")+'" onclick="setType(\''+a[0]+'\')">'+a[1]+'</button>'}).join("");
@@ -181,16 +205,16 @@ function tripForm(id){
   '<div class="row2"><div><label>Début</label><input id="v_s" type="date" value="'+(t?t.start:today())+'"></div><div><label>Fin</label><input id="v_e" type="date" value="'+(t?t.end:"")+'"></div></div>'+
   '<label>Monnaie</label><button type="button" class="pb" id="pb" onclick="pickToggle()">'+esc(curBtn())+'</button>'+
   '<div id="pk" class="pk" hidden><input id="pq" type="search" placeholder="Rechercher un pays ou une monnaie" oninput="pickList(this.value)" autocomplete="off"><div id="pl" class="pl"></div></div>'+
-  '<div class="row2"><div><label>Budget initial</label><input id="v_b" inputmode="decimal" value="'+(t?t.budget:"")+'"></div><div><label id="rl">1 € = ? '+esc(t?t.cur:"")+'</label><input id="v_r" inputmode="decimal" value="'+(t&&t.rate?t.rate:"")+'"></div></div>'+
+  '<div class="row2"><div><label>Budget initial</label><input id="v_b" inputmode="decimal" value="'+(t?t.budget:"")+'"></div><div><label id="rl">1 € = ? '+esc(t?t.cur:"")+'</label><input id="v_r" inputmode="decimal" value="'+(t&&(t.rate0||t.rate)?(t.rate0||t.rate):"")+'"></div></div>'+
   '<small style="color:var(--mut)">Taux indicatif au '+RDATE+' pré-rempli à la sélection de la monnaie ; modifie-le si besoin.</small>'+
-  '<button class="btn" onclick="saveTrip()">Enregistrer</button>'+(t?'<button class="btn s" onclick="delTrip(\''+id+'\')">Supprimer le voyage</button>':""));
+  '<button class="btn" onclick="saveTrip()">Enregistrer</button>'+(t?'<button class="btn s" onclick="delTrip(\''+id+'\')">Supprimer le voyage</button>':""));base();
 }
 function saveTrip(){
   var b=pf($("#v_b").value),r=pf($("#v_r").value),n=$("#v_n").value.trim(),c=form.cur,s=$("#v_s").value,e=$("#v_e").value;
   if(!n||!c||!s||!e||!(b>=0)||$("#v_b").value===""){alert("Renseigne le nom, les dates, la monnaie et le budget.");return}
   if(!(r>0)){alert("Renseigne le taux de change : combien de "+c+" pour 1 €.");return}
   if(e<s){alert("La date de fin doit suivre la date de début.");return}
-  var o={id:form.id||uid(),name:n,start:s,end:e,cur:c,budget:b,rate:r};
+  var o={id:form.id||uid(),name:n,start:s,end:e,cur:c,budget:b,rate:r,rate0:r};
   if(form.id){S.trips=S.trips.map(function(x){return x.id===form.id?o:x})}else{S.trips.push(o);S.cur=o.id}
   save();closeSh();render();
 }
