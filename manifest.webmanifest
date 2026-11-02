@@ -1,6 +1,6 @@
 {
-  "name": "Budget voyage",
-  "short_name": "Budget",
+  "name": "Budget tracker",
+  "short_name": "Budget tracker",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -18,6 +18,11 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ]
 }

@@ -1,17 +1,23 @@
-# Budget voyage
+# Budget tracker
 
 Application web mobile pour suivre le budget en espèces d'un voyage dans la monnaie locale.
 Un seul fichier d'application (`index.html`), sans compilation ni serveur.
 
 ## Fonctions
-- Voyages : dates, monnaie (liste de 154 monnaies avec recherche par pays ou monnaie), budget initial.
+- Voyages : dates, monnaie (154 monnaies, recherche par pays ou par monnaie), budget initial.
 - Transactions : dépense ou revenu (rechargement), catégorie, date, note.
-- Conversion en euros : le taux du jour est récupéré à la création de chaque transaction et enregistré avec elle.
+- Conversion en euros : le taux du jour est récupéré à la création de chaque transaction et enregistré avec elle. Le budget restant est aussi affiché en euros.
 - Blocage d'une dépense qui ferait passer le budget restant en négatif.
 - Dashboard : KPI et graphique des dépenses par catégorie, par jour, semaine ou mois.
+- Suggestions d'intitulés à partir des transactions déjà saisies.
+- Suivi par personne (option par voyage) : choix de la personne à chaque transaction et statistiques par personne dans le dashboard.
+- Sélection de plusieurs transactions pour les supprimer.
+- Export et import d'un voyage et de ses transactions au format CSV (onglet Voyages).
+- Apparence : mode auto, jour ou nuit, et 5 thèmes de couleur (onglet Voyages).
+- Les formulaires ne se ferment pas sans confirmation si des données ont été saisies.
 
 ## Mise en ligne avec GitHub Pages
-1. Crée un dépôt GitHub et envoie-y tous les fichiers de ce dossier, à la racine.
+1. Envoie tous les fichiers de ce dossier à la racine du dépôt.
 2. Settings > Pages > Source : « Deploy from a branch », branche `main`, dossier `/ (root)`.
 3. Après une à deux minutes, l'appli est disponible à `https://<compte>.github.io/<depot>/`.
 4. Sur le téléphone, ouvre ce lien puis :
