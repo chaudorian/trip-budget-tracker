@@ -53,8 +53,8 @@ service cloud.firestore {
 La clé d'API Firebase est publique par nature. Tu peux la restreindre aux adresses de ton site dans Google Cloud Console (APIs et services > Identifiants).
 
 ## Sécurité : App Check et clé d'API
-1. Crée une clé de site reCAPTCHA de type site web, basée sur le score, avec le domaine `chaudorian.github.io` (Google Cloud Console > Sécurité > reCAPTCHA Enterprise / Fraud Defense).
-2. Firebase > App Check > Applications > ton application web : enregistre la clé du site avec le fournisseur « Fraud Defense (anciennement reCAPTCHA Enterprise) ». L'appli utilise ce fournisseur (`ent:true` dans la constante `FB`) ; avec la clé classique v3, mets `ent:false` et enregistre la clé secrète sur le fournisseur reCAPTCHA.
+1. Clé reCAPTCHA créée (domaine : `chaudorian.github.io`), de type site web basé sur le score, sans case à cocher, dans le projet Google Cloud de Firebase.
+2. Firebase > App Check > Applications > ton application web > fournisseur « Fraud Defense (anciennement reCAPTCHA Enterprise) » : colle la clé **du site** (jamais la clé secrète) et enregistre. L'appli utilise ce fournisseur (`ent:true` dans la constante `FB`). Le fournisseur reCAPTCHA classique est obsolète ; avec lui, mets `ent:false`.
 3. La clé du site (publique) est déjà renseignée dans `index.html`, dans la constante `FB`, champ `rc`. Publie le site.
 4. Vérifie dans App Check > Métriques que les requêtes Firestore apparaissent comme vérifiées, puis dans l'onglet API, clique sur « Appliquer » pour Cloud Firestore.
 5. Google Cloud Console > API et services > Identifiants > ta clé : restriction d'application « Sites web » avec `https://chaudorian.github.io/*`, et restriction d'API sur « Cloud Firestore API » et « Firebase App Check API ».

@@ -159,7 +159,7 @@ var base=name,n=2;while(S.trips.some(function(t){return t.name===name}))name=bas
 S.trips.push({id:id,name:name,start:start,end:end,cur:cur,budget:budget,rate:rate,rate0:rate0,people:people,usePeople:usePeople&&people.length>0,lastPerson:null});
 S.tx=S.tx.concat(tx);S.cur=id;save();tab="tx";render();
 alert("Voyage « "+name+" » importé : "+tx.length+" transaction"+(tx.length>1?"s":"")+(skip?" ("+skip+" ligne"+(skip>1?"s":"")+" ignorée"+(skip>1?"s":"")+")":"")+".")}
-var FB={k:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",p:"budget-tracker-2779f",rc:"6LdHmg0uAAAAAONK5GS6tijZDVTjT7n80GQzeb3h",ent:true,cfg:{apiKey:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",authDomain:"budget-tracker-2779f.firebaseapp.com",projectId:"budget-tracker-2779f",storageBucket:"budget-tracker-2779f.firebasestorage.app",messagingSenderId:"686904777149",appId:"1:686904777149:web:3ae99fb6e98085bd295ad4"}};
+var FB={k:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",p:"budget-tracker-2779f",rc:"6Ld5Kw4uAAAAAIlOs5KlTgxKvIDssPu_eATYo_M0",ent:true,cfg:{apiKey:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",authDomain:"budget-tracker-2779f.firebaseapp.com",projectId:"budget-tracker-2779f",storageBucket:"budget-tracker-2779f.firebasestorage.app",messagingSenderId:"686904777149",appId:"1:686904777149:web:3ae99fb6e98085bd295ad4"}};
 var ACT={t:"",x:0},ACP=null;
 function rcO(){return window.grecaptcha&&(FB.ent?grecaptcha.enterprise:grecaptcha)}
 function rcLoad(){return new Promise(function(ok,ko){if(rcO()&&rcO().execute)return rcO().ready(ok);var e=document.createElement("script");e.src="https://www.google.com/recaptcha/"+(FB.ent?"enterprise":"api")+".js?render="+FB.rc;e.onload=function(){rcO().ready(ok)};e.onerror=function(){ko(new Error("reCAPTCHA inaccessible"))};document.head.appendChild(e)})}
