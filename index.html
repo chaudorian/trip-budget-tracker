@@ -12,9 +12,9 @@
 body{background:var(--bg);color:var(--ink);font:16px/1.4 "Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100vh;padding-bottom:116px}
 main{max-width:560px;margin:0 auto;padding:16px}
 h2{font-size:1.05rem;margin:20px 0 8px}
-.hero{background:var(--hb,var(--ac));color:var(--ht,var(--acx));border-radius:20px;padding:18px}
-.hero small{opacity:.75}.hero .big{font-size:2.3rem;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:2px 0 10px}
-.bar{height:8px;border-radius:8px;background:rgba(127,127,127,.35);overflow:hidden}.bar i{display:block;height:100%;background:var(--hf,var(--acx))}
+.hero{background:var(--hb,var(--ac));color:var(--ht,var(--acx));box-shadow:inset 0 0 0 1px var(--hbd,transparent);border-radius:20px;padding:18px}
+.hero small{opacity:.9}.hero .big{color:var(--hbig,inherit);font-size:2.3rem;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:2px 0 10px}
+.bar{height:8px;border-radius:8px;background:var(--htr,rgba(127,127,127,.35));overflow:hidden}.bar i{display:block;height:100%;background:var(--hf,var(--acx))}
 .sel{display:flex;gap:8px;align-items:center;margin-bottom:12px}
 select,input,textarea{font:inherit;color:var(--ink);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;width:100%}
 label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
@@ -96,7 +96,7 @@ var TH={mode:"auto",pal:"ocean"};
 try{var tt=JSON.parse(localStorage.getItem("bv-theme"));if(tt&&PAL[tt.pal]&&tt.mode)TH=tt}catch(e){}
 function isDark(){return TH.mode==="dark"||(TH.mode==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
 function mixc(a,b,t){var f=function(h){return[1,3,5].map(function(i){return parseInt(h.substr(i,2),16)})},x=f(a),y=f(b);return "#"+x.map(function(v,i){return ("0"+Math.round(v*t+y[i]*(1-t)).toString(16)).slice(-2)}).join("")}
-function applyTheme(){var dk=isDark(),v=PAL[TH.pal][dk?"d":"l"],r=document.documentElement;for(var k in v)r.style.setProperty("--"+k,v[k]);r.style.setProperty("--exp",dk?"#fb923c":"#c2410c");r.style.setProperty("--inc",dk?"#4ade80":"#15803d");r.style.setProperty("--hb",dk?mixc(v.ac,v.bg,.3):v.ac);r.style.setProperty("--ht",dk?v.ink:v.acx);r.style.setProperty("--hf",dk?v.ac:v.acx);r.style.colorScheme=dk?"dark":"light";var m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.bg}
+function applyTheme(){var dk=isDark(),v=PAL[TH.pal][dk?"d":"l"],r=document.documentElement;for(var k in v)r.style.setProperty("--"+k,v[k]);r.style.setProperty("--exp",dk?"#fb923c":"#c2410c");r.style.setProperty("--inc",dk?"#4ade80":"#15803d");r.style.setProperty("--hb",dk?v.sf:v.ac);r.style.setProperty("--ht",dk?v.mut:v.acx);r.style.setProperty("--hf",dk?v.ac:v.acx);r.style.setProperty("--hbd",dk?v.ln:"transparent");r.style.setProperty("--hbig",dk?v.ink:v.acx);r.style.setProperty("--htr",dk?v.ln:"rgba(127,127,127,.35)");r.style.colorScheme=dk?"dark":"light";var m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.bg}
 function setTheme(k,v){TH[k]=v;try{localStorage.setItem("bv-theme",JSON.stringify(TH))}catch(e){}applyTheme();render()}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(TH.mode==="auto"){applyTheme();render()}})}catch(e){}
 applyTheme();
@@ -108,6 +108,7 @@ function remEurTxt(){var t=trip();if(!t||!t.rate)return"";var l=txs(),v=t.budget
 function snap(){var o=$("#ov");if(!o)return"";var a=[];o.querySelectorAll("input,select,textarea").forEach(function(e){if(["f_r","v_r","pq"].indexOf(e.id)<0)a.push(e.type==="checkbox"?e.checked:e.value)});return a.join("|")+"|"+(form.cur||"")+"|"+(form.type||"")+"|"+(form.people||[]).map(function(p){return p.id+p.name}).join(",")}
 function base(){var o=$("#ov");if(o)o._b=snap()}
 function tryClose(){var o=$("#ov");if(!o)return;if(snap()===o._b)return closeSh();ask("Abandonner la saisie ? Les données entrées seront perdues.",closeSh,"Abandonner","Continuer")}
+function tomb(ids){var t=trip();if(!t)return;t.del=t.del||{};var n=Date.now();ids.forEach(function(i){t.del[i]=n})}
 var SEL=null,chart2=null,SG=[];
 function sugg(q){var b=$("#sg");if(!b)return;q=norm(q.trim());SG=[];if(q){var seen={};S.tx.slice().sort(function(u,v){return v.ts-u.ts}).forEach(function(x){var k=norm(x.title);if(x.type===form.type&&!seen[k]&&k!==q&&k.indexOf(q)>=0){seen[k]=1;SG.push(x.title)}})}SG=SG.slice(0,5);b.innerHTML=SG.map(function(t,i){return '<div class="po" onclick="pickTitle('+i+')">'+esc(t)+'</div>'}).join("")}
 function pickTitle(i){$("#f_t").value=SG[i];$("#sg").innerHTML=""}
@@ -115,7 +116,7 @@ function selOn(){SEL={};render()}
 function selOff(){SEL=null;render()}
 function rowTap(id){if(!SEL)return txForm(id);if(SEL[id])delete SEL[id];else SEL[id]=1;render()}
 function selAll(){var l=txs(),all=l.every(function(x){return SEL[x.id]});SEL={};if(!all)l.forEach(function(x){SEL[x.id]=1});render()}
-function selDel(){var n=Object.keys(SEL).length;if(!n)return;ask("Supprimer "+n+" transaction"+(n>1?"s":"")+" ?",function(){S.tx=S.tx.filter(function(x){return !SEL[x.id]});SEL=null;save();render()})}
+function selDel(){var n=Object.keys(SEL).length;if(!n)return;ask("Supprimer "+n+" transaction"+(n>1?"s":"")+" ?",function(){tomb(Object.keys(SEL));S.tx=S.tx.filter(function(x){return !SEL[x.id]});SEL=null;save();render()})}
 function selBar(){var n=Object.keys(SEL).length;return '<div class="selact"><button class="btn s" style="margin:0"'+(n?"":" disabled")+' onclick="selDel()">Supprimer'+(n?" ("+n+")":"")+'</button></div>'}
 function pname(x){var t=trip();if(!t||!t.usePeople||!x.person)return"";var p=(t.people||[]).filter(function(q){return q.id===x.person})[0];return p?p.name:""}
 function personField(x){var t=trip();if(!t.usePeople||!(t.people||[]).length)return"";var c=x?x.person:(t.lastPerson||t.people[0].id);return '<label>Personne</label><select id="f_p">'+(x&&!x.person?'<option value="">— Non attribuée</option>':"")+t.people.map(function(p){return '<option value="'+p.id+'"'+(p.id===c?" selected":"")+'>'+esc(p.name)+'</option>'}).join("")+'</select>'}
@@ -152,17 +153,44 @@ if(ti>=0)rows.slice(ti+1).forEach(function(r,k){var date=nd(r[0]),ty=norm(r[1]||
 if(!re.test(date)||!type||!(amt>0)||!title){skip++;return}
 var cat=CAT[type].filter(function(c){return norm(c)===norm(r[6]||"")})[0]||CAT[type][CAT[type].length-1],pn=(r[7]||"").trim(),pid=null;
 if(pn){var p=people.filter(function(q){return norm(q.name)===norm(pn)})[0];if(!p){p={id:uid(),name:pn};people.push(p);usePeople=true}pid=p.id}
-tx.push({id:uid(),trip:id,type:type,title:title,amount:amt,rate:rt,eur:amt/rt,date:date,cat:cat,note:(r[8]||"").trim(),ts:Date.now()+k,person:pid})});
+tx.push({id:uid(),trip:id,type:type,title:title,amount:amt,rate:rt,eur:amt/rt,date:date,cat:cat,note:(r[8]||"").trim(),ts:Date.now()+k,upd:Date.now(),person:pid})});
 var base=name,n=2;while(S.trips.some(function(t){return t.name===name}))name=base+" ("+(n++)+")";
 S.trips.push({id:id,name:name,start:start,end:end,cur:cur,budget:budget,rate:rate,rate0:rate0,people:people,usePeople:usePeople&&people.length>0,lastPerson:null});
 S.tx=S.tx.concat(tx);S.cur=id;save();tab="tx";render();
 alert("Voyage « "+name+" » importé : "+tx.length+" transaction"+(tx.length>1?"s":"")+(skip?" ("+skip+" ligne"+(skip>1?"s":"")+" ignorée"+(skip>1?"s":"")+")":"")+".")}
+var FB={k:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",p:"budget-tracker-2779f",rc:"6LdHmg0uAAAAAONK5GS6tijZDVTjT7n80GQzeb3h",cfg:{apiKey:"AIzaSyB0ap4K93q2g_zNocLqu1VPhml4RIoKmkw",authDomain:"budget-tracker-2779f.firebaseapp.com",projectId:"budget-tracker-2779f",storageBucket:"budget-tracker-2779f.firebasestorage.app",messagingSenderId:"686904777149",appId:"1:686904777149:web:3ae99fb6e98085bd295ad4"}};
+var AC=null;
+async function fsH(){if(!FB.rc)return{};try{if(!AC){var A=await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js"),C=await import("https://www.gstatic.com/firebasejs/13.2.0/firebase-app-check.js"),app=A.initializeApp(FB.cfg);AC={C:C,ac:C.initializeAppCheck(app,{provider:new C.ReCaptchaV3Provider(FB.rc),isTokenAutoRefreshEnabled:true})}}var r=await AC.C.getToken(AC.ac,false);return{"X-Firebase-AppCheck":r.token}}catch(e){throw new Error("App Check indisponible ("+(e&&e.message||e)+")")}}
+function fsUrl(c,q){return "https://firestore.googleapis.com/v1/projects/"+FB.p+"/databases/(default)/documents/trips/"+encodeURIComponent(c)+"?key="+FB.k+(q||"")}
+async function fsGet(c){var r=await fetch(fsUrl(c),{headers:await fsH()});if(r.status===404)return{exists:false};if(!r.ok)throw new Error("lecture refusée ("+r.status+")");var j=await r.json();return{exists:true,data:(j.fields&&j.fields.data&&j.fields.data.stringValue)||"",ut:j.updateTime}}
+async function fsPut(c,obj,p){var s=JSON.stringify(obj);if(s.length>850000)throw new Error("voyage trop volumineux");var q=p.exists?"&currentDocument.updateTime="+encodeURIComponent(p.ut):"&currentDocument.exists=false";var r=await fetch(fsUrl(c,q),{method:"PATCH",headers:Object.assign({"Content-Type":"application/json"},await fsH()),body:JSON.stringify({fields:{data:{stringValue:s}}})});if(r.ok)return true;if(r.status===409||r.status===400||r.status===412){var j=await r.json().catch(function(){return{}}),st=(j.error&&j.error.status)||"";if(st==="ABORTED"||st==="FAILED_PRECONDITION"||st==="ALREADY_EXISTS")return false}throw new Error("écriture refusée ("+r.status+")")}
+function cj(o){return JSON.stringify(o,function(k,v){if(v&&typeof v==="object"&&!Array.isArray(v)){var s={};Object.keys(v).sort().forEach(function(x){s[x]=v[x]});return s}return v})}
+function cn(m){return cj({trip:m.trip,tx:m.tx.slice().sort(function(a,b){return a.id<b.id?-1:1}),del:m.del||{}})}
+function stamp(t){t.upd=t.upd||1;S.tx.forEach(function(x){if(x.trip===t.id&&!x.upd)x.upd=x.ts||1})}
+function pack(t){return{v:1,trip:{id:t.id,name:t.name,start:t.start,end:t.end,cur:t.cur,budget:t.budget,rate0:t.rate0||t.rate,people:t.people||[],usePeople:!!t.usePeople,upd:t.upd||1},tx:S.tx.filter(function(x){return x.trip===t.id}),del:t.del||{}}}
+function mergeData(a,b){if(!b)return a;var del={},map={},m={};Object.keys(b.del||{}).forEach(function(k){del[k]=b.del[k]});Object.keys(a.del||{}).forEach(function(k){del[k]=Math.max(del[k]||0,a.del[k])});
+[b.tx,a.tx].forEach(function(l){l.forEach(function(x){var c=map[x.id];if(!c||(x.upd||0)>(c.upd||0))map[x.id]=x})});
+m.trip=(b.trip.upd||0)>(a.trip.upd||0)?b.trip:a.trip;m.tx=Object.keys(map).map(function(i){return map[i]}).filter(function(x){return !(del[x.id]&&del[x.id]>=(x.upd||0))});m.del=del;m.v=1;return m}
+function applyMerged(t,m,loc){if(cn(m)===cn(loc))return false;S.tx=S.tx.filter(function(x){return x.trip!==t.id}).concat(m.tx);["name","start","end","cur","budget","rate0","people","usePeople","upd"].forEach(function(k){t[k]=m.trip[k]});if(!t.rate)t.rate=t.rate0;t.del=m.del;persist();return true}
+async function syncTrip(t){var chg=false;for(var i=0;i<4;i++){var p=await fsGet(t.share),rem=p.exists&&p.data?JSON.parse(p.data):null;stamp(t);var loc=pack(t),m=mergeData(loc,rem);if(applyMerged(t,m,loc))chg=true;else persist();if(rem&&cn(m)===cn(rem))return chg;if(await fsPut(t.share,m,p))return chg}throw new Error("conflit, nouvel essai plus tard")}
+var SYN={t:null,busy:false,again:false,e:0};
+function schedSync(){if(!S.trips.some(function(t){return t.share}))return;clearTimeout(SYN.t);SYN.t=setTimeout(syncAll,1500)}
+function errMsg(e){var m=String(e&&e.message||e);return /fetch|network/i.test(m)?"pas de connexion":m}
+async function syncAll(){if(SYN.busy){SYN.again=true;return}SYN.busy=true;var chg=false;try{var l=S.trips.filter(function(x){return x.share});for(var i=0;i<l.length;i++){if(await syncTrip(l[i]))chg=true}}catch(e){if(navigator.onLine!==false&&Date.now()-SYN.e>60000){SYN.e=Date.now();alert("Synchronisation impossible : "+errMsg(e))}}SYN.busy=false;if(chg)render();if(SYN.again){SYN.again=false;schedSync()}}
+setInterval(function(){if(!document.hidden)syncAll()},30000);document.addEventListener("visibilitychange",function(){if(!document.hidden)syncAll()});setTimeout(syncAll,600);
+function shareSection(t){if(!t)return"";if(t.share)return '<label>Partage</label><div class="pr"><span style="font-size:.8rem;word-break:break-all">'+esc(t.share)+'</span><button type="button" style="font-size:.9rem;color:var(--ac)" onclick="copyCode(\''+t.id+'\')">Copier</button></div><button type="button" class="btn s" onclick="stopShare(\''+t.id+'\')">Arrêter le partage</button>';return '<button type="button" class="btn s" style="color:var(--ac)" onclick="shareTrip(\''+t.id+'\')">Partager ce voyage</button>'}
+function copyCode(id){var t=S.trips.filter(function(x){return x.id===id})[0];if(!t)return;try{navigator.clipboard.writeText(t.share).then(function(){alert("Code copié.")},function(){alert(t.share)})}catch(e){alert(t.share)}}
+async function shareTrip(id){var t=S.trips.filter(function(x){return x.id===id})[0];if(!t)return;t.share=Array.from(crypto.getRandomValues(new Uint8Array(24)),function(b){return (b%36).toString(36)}).join("");stamp(t);persist();closeSh();try{await syncTrip(t)}catch(e){t.share=null;persist();render();alert("Partage impossible : "+errMsg(e));return}render();try{navigator.clipboard.writeText(t.share)}catch(e){}alert("Voyage partagé. Envoie le code d’invitation (dans « Modifier » du voyage) aux autres personnes.")}
+function stopShare(id){ask("Arrêter le partage sur cet appareil ? Les autres personnes gardent leur copie.",function(){var t=S.trips.filter(function(x){return x.id===id})[0];if(t)t.share=null;persist();closeSh();render()},"Arrêter","Annuler")}
+function joinForm(){form={};sheet('<h2 style="margin-top:0">Rejoindre un voyage partagé</h2><label>Code d’invitation</label><input id="jc" autocomplete="off" autocapitalize="none" spellcheck="false"><button class="btn" onclick="joinTrip()">Rejoindre</button>');base()}
+async function joinTrip(){var c=$("#jc").value.trim();if(c.length<20){alert("Ce code n’est pas valide.");return}if(S.trips.some(function(t){return t.share===c})){alert("Tu as déjà rejoint ce voyage.");return}try{var r=await fsGet(c);if(!r.exists){alert("Aucun voyage trouvé avec ce code.");return}var d=JSON.parse(r.data);if(S.trips.some(function(t){return t.id===d.trip.id})){alert("Ce voyage existe déjà sur cet appareil.");return}var t=Object.assign({},d.trip,{rate:d.trip.rate0,share:c,del:d.del||{},lastPerson:null});S.trips.push(t);S.tx=S.tx.concat(d.tx);S.cur=t.id;persist();closeSh();tab="tx";render();alert("Voyage « "+t.name+" » rejoint.")}catch(e){alert("Impossible de rejoindre : "+errMsg(e))}}
 var CAT={exp:["Alimentation","Restaurant","Achat","Loisir","Transport","Logement","Santé","Divers"],inc:["Rechargement"]};
 var COL=["#16a34a","#f59e0b","#8b5cf6","#ec4899","#0ea5e9","#14b8a6","#ef4444","#94a3b8","#22c55e"];
 var ALL=CAT.exp.concat(CAT.inc);
 var S={trips:[],tx:[],cur:null},tab="tx",per="day",chart=null,form={};
 try{var raw=localStorage.getItem("bv1");if(raw)S=JSON.parse(raw)}catch(e){}
-function save(){try{localStorage.setItem("bv1",JSON.stringify(S))}catch(e){}}
+function persist(){try{localStorage.setItem("bv1",JSON.stringify(S))}catch(e){}}
+function save(){persist();schedSync()}
 function $(s){return document.querySelector(s)}
 function uid(){return Math.random().toString(36).slice(2,9)}
 function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
@@ -184,7 +212,7 @@ function stats(){var l=txs(),sp=sum(l.filter(function(x){return x.type==="exp"})
 function render(){
   if(chart){chart.destroy();chart=null}if(chart2){chart2.destroy();chart2=null}if(tab!=="tx")SEL=null;
   var app=$("#app"),nav=$("#navw");
-  if(!S.trips.length){nav.innerHTML="";app.innerHTML='<div class="empty"><h2>Bienvenue dans Budget tracker</h2><p>Crée ton premier voyage pour suivre ton budget en espèces.</p><div class="trow" style="margin-top:16px"><button class="btn" style="margin:0" onclick="tripForm()">Créer un voyage</button><label class="ib" title="Importer un voyage (CSV)" aria-label="Importer un voyage (CSV)">'+ic('<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 20h16"/>')+'<input type="file" accept=".csv,text/csv" hidden onchange="impCsv(this)"></label></div></div>';return}
+  if(!S.trips.length){nav.innerHTML="";app.innerHTML='<div class="empty"><h2>Bienvenue dans Budget tracker</h2><p>Crée ton premier voyage pour suivre ton budget en espèces.</p><div class="trow" style="margin-top:16px"><button class="btn" style="margin:0" onclick="tripForm()">Créer un voyage</button><label class="ib" title="Importer un voyage (CSV)" aria-label="Importer un voyage (CSV)">'+ic('<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 20h16"/>')+'<input type="file" accept=".csv,text/csv" hidden onchange="impCsv(this)"></label><button type="button" class="ib" title="Rejoindre un voyage partagé" aria-label="Rejoindre un voyage partagé" onclick="joinForm()">'+ic('<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M16 5a3 3 0 0 1 0 6M21 20v-1a5 5 0 0 0-3.5-4.8"/>')+'</button></div></div>';return}
   if(!trip())S.cur=S.trips[0].id;
   var h='<div class="sel"><select onchange="S.cur=this.value;SEL=null;save();render()">'+S.trips.map(function(t){return '<option value="'+t.id+'"'+(t.id===S.cur?" selected":"")+'>'+esc(t.name)+'</option>'}).join("")+'</select></div>';
   h+=tab==="tx"?vTx():tab==="dash"?vDash():vTrips();
@@ -227,8 +255,8 @@ function drawChart(){
   chart=new Chart(cv,{type:"bar",data:{labels:keys.map(function(k){return lab(k,per)}),datasets:CAT.exp.map(function(c){return{label:c,backgroundColor:ccol(c),data:keys.map(function(k){return sum(l.filter(function(x){return x.cat===c&&key(x.date,per)===k}))})}})},options:{responsive:true,scales:{x:{stacked:true,ticks:{color:tc},grid:{display:false}},y:{stacked:true,ticks:{color:tc},grid:{color:gc}}},plugins:{legend:{labels:{color:tc,boxWidth:10}}}}});
 }
 function vTrips0(){
-  var h='<div class="trow"><button class="btn" style="margin:0" onclick="tripForm()">Nouveau voyage</button><label class="ib" title="Importer un voyage (CSV)" aria-label="Importer un voyage (CSV)">'+ic('<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 20h16"/>')+'<input type="file" accept=".csv,text/csv" hidden onchange="impCsv(this)"></label></div>';
-  S.trips.forEach(function(t){h+='<div class="card"><b>'+esc(t.name)+'</b><br><small style="color:var(--mut)">'+D(t.start).toLocaleDateString("fr-FR")+' → '+D(t.end).toLocaleDateString("fr-FR")+' · '+esc(t.cur)+' · 1 € = '+n2(t.rate||0)+' · budget '+n2(t.budget)+'</small><button class="btn s" style="margin-top:10px" onclick="tripForm(\''+t.id+'\')">Modifier</button></div>'});
+  var h='<div class="trow"><button class="btn" style="margin:0" onclick="tripForm()">Nouveau voyage</button><label class="ib" title="Importer un voyage (CSV)" aria-label="Importer un voyage (CSV)">'+ic('<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 20h16"/>')+'<input type="file" accept=".csv,text/csv" hidden onchange="impCsv(this)"></label><button type="button" class="ib" title="Rejoindre un voyage partagé" aria-label="Rejoindre un voyage partagé" onclick="joinForm()">'+ic('<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M16 5a3 3 0 0 1 0 6M21 20v-1a5 5 0 0 0-3.5-4.8"/>')+'</button></div>';
+  S.trips.forEach(function(t){h+='<div class="card"><b>'+esc(t.name)+'</b>'+(t.share?' <small style="color:var(--ac)">· partagé</small>':"")+'<br><small style="color:var(--mut)">'+D(t.start).toLocaleDateString("fr-FR")+' → '+D(t.end).toLocaleDateString("fr-FR")+' · '+esc(t.cur)+' · 1 € = '+n2(t.rate||0)+' · budget '+n2(t.budget)+'</small><button class="btn s" style="margin-top:10px" onclick="tripForm(\''+t.id+'\')">Modifier</button></div>'});
   return h;
 }
 function sheet(h){var o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML='<div class="sh"><button class="x" type="button" onclick="tryClose()" aria-label="Fermer">×</button>'+h+'</div>';o.addEventListener("click",function(e){if(e.target===o)tryClose()});document.body.appendChild(o)}
@@ -259,11 +287,11 @@ function saveTx(){
   if(!t||!(a>0)){alert("Renseigne un intitulé et un montant supérieur à 0.");return}
   if(!(r>0)){alert("Renseigne le taux de change du jour pour convertir en euros.");return}
   if(form.type==="exp"){var before=stats().rem,after=before,old=form.id?S.tx.find(function(x){return x.id===form.id}):null;if(old)after+=old.type==="exp"?old.amount:-old.amount;after-=a;if(after<0&&after<before){alert("Budget insuffisant : il reste "+money(Math.max(0,before))+" et cette dépense ferait passer le budget à −"+money(-after)+". Ajoute d’abord un rechargement ou réduis le montant.");return}}
-  var o={id:form.id||uid(),trip:S.cur,type:form.type,title:t,amount:a,rate:r,eur:a/r,date:$("#f_d").value||today(),cat:$("#f_c").value,note:$("#f_n").value.trim(),ts:Date.now(),person:$("#f_p")?$("#f_p").value:(form.id?(S.tx.filter(function(x){return x.id===form.id})[0]||{}).person:null)};
+  var o={id:form.id||uid(),trip:S.cur,type:form.type,title:t,amount:a,rate:r,eur:a/r,date:$("#f_d").value||today(),cat:$("#f_c").value,note:$("#f_n").value.trim(),ts:Date.now(),upd:Date.now(),person:$("#f_p")?$("#f_p").value:(form.id?(S.tx.filter(function(x){return x.id===form.id})[0]||{}).person:null)};
   if(form.id){S.tx=S.tx.map(function(x){return x.id===form.id?o:x})}else{S.tx.push(o);var tr=trip();if(tr.rate!==r)tr.rate=r;if(o.person)tr.lastPerson=o.person}
   save();closeSh();render();
 }
-function delTx(id){ask("Supprimer cette transaction ?",function(){S.tx=S.tx.filter(function(x){return x.id!==id});save();closeSh();render()})}
+function delTx(id){ask("Supprimer cette transaction ?",function(){tomb([id]);S.tx=S.tx.filter(function(x){return x.id!==id});save();closeSh();render()})}
 function tripForm(id){
   var t=id?S.trips.find(function(a){return a.id===id}):null;form={id:id||null,cur:t?t.cur:"",people:t&&t.people?t.people.map(function(p){return{id:p.id,name:p.name}}):[]};
   sheet((t?'<button class="xp" type="button" title="Exporter en CSV" aria-label="Exporter en CSV" onclick="expTrip(\''+id+'\')">'+ic('<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 20h16"/>')+'</button>':"")+'<h2 style="margin-top:0">'+(t?"Modifier le":"Nouveau")+' voyage</h2><label>Nom</label><input id="v_n" value="'+esc(t?t.name:"")+'" placeholder="Thaïlande 2026">'+
@@ -273,7 +301,7 @@ function tripForm(id){
   '<div class="row2"><div><label>Budget initial</label><input id="v_b" inputmode="decimal" value="'+(t?t.budget:"")+'"></div><div><label id="rl">1 € = ? '+esc(t?t.cur:"")+'</label><input id="v_r" inputmode="decimal" value="'+(t&&(t.rate0||t.rate)?(t.rate0||t.rate):"")+'"></div></div>'+
   '<small style="color:var(--mut)">Taux indicatif au '+RDATE+' pré-rempli à la sélection de la monnaie ; modifie-le si besoin.</small>'+
   '<label class="chk"><input type="checkbox" id="v_p" onchange="pplToggle()"'+(t&&t.usePeople?" checked":"")+'> Suivre qui dépense (plusieurs personnes)</label><div id="ppl"'+(t&&t.usePeople?"":" hidden")+'><div id="pplist"></div><div class="row2" style="margin-top:8px"><input id="ppn" placeholder="Prénom" autocomplete="off"><button type="button" class="btn" style="margin:0" onclick="pplAdd()">Ajouter</button></div></div>'+
-  '<button class="btn" onclick="saveTrip()">Enregistrer</button>'+(t?'<button class="btn s" onclick="delTrip(\''+id+'\')">Supprimer le voyage</button>':""));pplRender();base();
+  shareSection(t)+'<button class="btn" onclick="saveTrip()">Enregistrer</button>'+(t?'<button class="btn s" onclick="delTrip(\''+id+'\')">Supprimer le voyage</button>':""));pplRender();base();
 }
 function saveTrip(){
   var b=pf($("#v_b").value),r=pf($("#v_r").value),n=$("#v_n").value.trim(),c=form.cur,s=$("#v_s").value,e=$("#v_e").value;
@@ -283,10 +311,10 @@ function saveTrip(){
   if($("#ppn").value.trim())pplAdd();
   if($("#v_p").checked&&!form.people.length){alert("Ajoute au moins une personne ou désactive le suivi par personne.");return}
   var old=form.id?S.trips.filter(function(x){return x.id===form.id})[0]:null;
-  var o={id:form.id||uid(),name:n,start:s,end:e,cur:c,budget:b,rate:r,rate0:r,people:form.people,usePeople:$("#v_p").checked,lastPerson:old?old.lastPerson:null};
+  var o={id:form.id||uid(),name:n,start:s,end:e,cur:c,budget:b,rate:r,rate0:r,people:form.people,usePeople:$("#v_p").checked,lastPerson:old?old.lastPerson:null,upd:Date.now(),share:old?old.share:null,del:old?old.del:null};
   if(form.id){S.trips=S.trips.map(function(x){return x.id===form.id?o:x})}else{S.trips.push(o);S.cur=o.id}
   save();closeSh();render();
 }
-function delTrip(id){ask("Supprimer ce voyage et toutes ses transactions ?",function(){S.trips=S.trips.filter(function(x){return x.id!==id});S.tx=S.tx.filter(function(x){return x.trip!==id});S.cur=S.trips[0]?S.trips[0].id:null;save();closeSh();render()})}
+function delTrip(id){var tt=S.trips.filter(function(x){return x.id===id})[0];ask("Supprimer ce voyage et toutes ses transactions"+(tt&&tt.share?" de cet appareil ? Les autres personnes le conservent.":" ?"),function(){S.trips=S.trips.filter(function(x){return x.id!==id});S.tx=S.tx.filter(function(x){return x.trip!==id});S.cur=S.trips[0]?S.trips[0].id:null;save();closeSh();render()})}
 render();
 </script></body></html>
