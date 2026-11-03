@@ -61,6 +61,9 @@ La clé d'API Firebase est publique par nature. Tu peux la restreindre aux adres
 
 Si `rc` est vide, App Check est désactivé dans l'appli : n'applique pas l'obligation dans la console avant d'avoir publié le site avec la clé.
 
+Le badge reCAPTCHA est masqué ; la mention de protection est affichée dans le formulaire « Rejoindre un voyage partagé ».
+L'appli échange elle-même le jeton reCAPTCHA contre un jeton App Check (sans le SDK Firebase) ; en cas d'échec, le message d'erreur de Google s'affiche.
+
 ## Données
 Les données sont enregistrées dans le navigateur du téléphone (localStorage). Rien n'est envoyé au dépôt.
 Elles ne sont pas synchronisées entre appareils et disparaissent si tu vides les données du site.
