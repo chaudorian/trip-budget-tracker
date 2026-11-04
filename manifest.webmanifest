@@ -1,6 +1,6 @@
 {
-  "name": "Budget tracker",
-  "short_name": "Budget tracker",
+  "name": "Cashly",
+  "short_name": "Cashly",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

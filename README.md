@@ -1,4 +1,4 @@
-# Budget tracker
+# Cashly
 
 Application web mobile pour suivre le budget en espèces d'un voyage dans la monnaie locale.
 Un seul fichier d'application (`index.html`), sans compilation ni serveur.
