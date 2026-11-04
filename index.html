@@ -70,6 +70,8 @@ input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--ac)}
 .pen{flex:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--ln);border-radius:12px;color:var(--mut);cursor:pointer;padding:0}
 .sec{margin-top:24px;padding-top:16px;border-top:1px solid var(--ln)}.sec>.btn:first-child{margin-top:0}.sec>.btn.s{margin-top:12px}.sec .chk:first-child{margin-top:0}
 .logbox{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:8px;margin-top:10px;max-height:50vh;overflow:auto;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace}.lg{padding:2px 0;word-break:break-word}.lg span{color:var(--mut)}.lg.e{color:var(--exp)}
+html.lock,html.lock body{overflow:hidden;overscroll-behavior:none}
+.ov{touch-action:none}.sh{touch-action:pan-y;overscroll-behavior:contain}
 .grecaptcha-badge{visibility:hidden}
 </style></head><body>
 <main id="app"></main>
@@ -130,6 +132,8 @@ function snap(){var o=$("#ov");if(!o)return"";var a=[];o.querySelectorAll("input
 function base(){var o=$("#ov");if(o)o._b=snap()}
 function tryClose(){var o=$("#ov");if(!o)return;if(snap()===o._b)return closeSh();ask("Abandonner la saisie ? Les données entrées seront perdues.",closeSh,"Abandonner","Continuer")}
 function tomb(ids){var t=trip();if(!t)return;t.del=t.del||{};var n=Date.now();ids.forEach(function(i){t.del[i]=n})}
+function syncLock(){document.documentElement.classList.toggle("lock",!!document.querySelector(".ov"))}
+try{new MutationObserver(syncLock).observe(document.body,{childList:true})}catch(e){}
 var SEL=null,chart2=null,SG=[];
 function sugg(q){var b=$("#sg");if(!b)return;q=norm(q.trim());SG=[];if(q){var seen={};S.tx.slice().sort(function(u,v){return v.ts-u.ts}).forEach(function(x){var k=norm(x.title);if(x.type===form.type&&!seen[k]&&k!==q&&k.indexOf(q)>=0){seen[k]=1;SG.push(x.title)}})}SG=SG.slice(0,5);b.innerHTML=SG.map(function(t,i){return '<div class="po" onclick="pickTitle('+i+')">'+esc(t)+'</div>'}).join("")}
 function pickTitle(i){$("#f_t").value=SG[i];$("#sg").innerHTML=""}
