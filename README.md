@@ -15,7 +15,7 @@ Un seul fichier d'application (`index.html`), sans compilation ni serveur.
 - Export et import d'un voyage et de ses transactions au format CSV (onglet Voyages).
 - Liste des transactions : recherche par intitulé mise à jour à la frappe et filtres par type (dépense ou revenu), catégorie et personne.
 - Dashboard organisé en sections (vue d'ensemble, dépenses dans le temps, catégories, par personne) avec les équivalents en euros.
-- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 5 thèmes de couleur), version de l'appli (v0.1) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
+- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 6 thèmes de couleur (dont Citron) et une couleur personnalisée choisie avec un sélecteur (spectre, valeurs RGB ou hexadécimal)), version de l'appli (v1) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
 - Les formulaires ne se ferment pas sans confirmation si des données ont été saisies.
 
 ## Mise en ligne avec GitHub Pages

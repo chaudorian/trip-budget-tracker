@@ -80,6 +80,14 @@ html.lock,html.lock body{overflow:hidden;overscroll-behavior:none}
 .fb i{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:var(--ac);color:var(--acx);font:700 .7rem/18px sans-serif;text-align:center;font-style:normal;padding:0 4px}
 .fp{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:2px 12px 12px;margin-top:10px}.fp .btn{margin-top:14px}
 .tb{align-items:center}.tb .rc{margin:0 auto 0 2px;color:var(--mut);font-size:.85rem}
+input[type=date]{position:relative;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a9f99' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:42px;min-height:46px}
+input[type=date]::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;right:0;bottom:0;width:auto;height:auto;opacity:0;cursor:pointer}
+.sw{gap:8px;flex-wrap:wrap}
+.cpsv{position:relative;height:190px;border-radius:12px;touch-action:none;margin-top:12px;overflow:hidden;cursor:crosshair}
+.cph{position:relative;height:26px;border-radius:13px;touch-action:none;margin-top:14px;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.cpk{position:absolute;width:22px;height:22px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.5);transform:translate(-50%,-50%);pointer-events:none;display:block}.cph .cpk{top:50%}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}input.bad{border-color:var(--exp)}
+.cpp{margin-top:14px;border:1px solid;border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px}.cpp span{padding:8px 14px;border-radius:10px;font-weight:700}.cpp i{flex:1;height:8px;border-radius:8px;display:block}
 .grecaptcha-badge{visibility:hidden}
 .gear{position:relative}nav button{position:relative}
 .nb{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:9px;background:var(--exp);color:#fff;font:700 .7rem/18px sans-serif;text-align:center;font-style:normal;padding:0 4px}.nb.nd{min-width:10px;width:10px;height:10px;padding:0;top:6px;right:calc(50% - 22px)}
@@ -111,19 +119,43 @@ sun:P("Soleil",["#f6efe9","#ffffff","#3a2214","#86684f","#e6d8cb","#c2410c","#ff
 lav:P("Lavande",["#f1eff8","#ffffff","#2b2350","#6d6791","#dcd8ee","#6d28d9","#ffffff"],["#130f24","#1d1736","#ebe7fb","#a59fc8","#352c5c","#a78bfa","#1a1033"]),
 rose:P("Cerise",["#f9eff3","#ffffff","#4a1530","#8d5a73","#ecd5df","#be185d","#ffffff"],["#1f0d16","#2e1422","#fbe7f0","#c096ab","#4d2339","#f472b6","#2a0a1a"]),
 slate:P("Ardoise",["#eef1f5","#ffffff","#1e293b","#64748b","#d8dee8","#2563eb","#ffffff"],["#0b1220","#131c2e","#e5ecf8","#94a3b8","#243049","#60a5fa","#07142c"])
+,citron:P("Citron",["#f8f5e4","#ffffff","#3a3208","#80723a","#e8e0b8","#a16207","#ffffff"],["#17140a","#221d0e","#f6efcf","#b7aa72","#3f3818","#facc15","#241c02"])
 };
 var TH={mode:"auto",pal:"ocean"};
-try{var tt=JSON.parse(localStorage.getItem("bv-theme"));if(tt&&PAL[tt.pal]&&tt.mode)TH=tt}catch(e){}
+try{var tt=JSON.parse(localStorage.getItem("bv-theme"));if(tt&&tt.mode&&(PAL[tt.pal]||(tt.pal==="custom"&&parseHex(tt.custom||""))))TH=tt}catch(e){}
 function isDark(){return TH.mode==="dark"||(TH.mode==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
 function mixc(a,b,t){var f=function(h){return[1,3,5].map(function(i){return parseInt(h.substr(i,2),16)})},x=f(a),y=f(b);return "#"+x.map(function(v,i){return ("0"+Math.round(v*t+y[i]*(1-t)).toString(16)).slice(-2)}).join("")}
-function applyTheme(){var dk=isDark(),v=PAL[TH.pal][dk?"d":"l"],r=document.documentElement;for(var k in v)r.style.setProperty("--"+k,v[k]);r.style.setProperty("--exp",dk?"#fb923c":"#c2410c");r.style.setProperty("--inc",dk?"#4ade80":"#15803d");r.style.setProperty("--hb",dk?v.sf:v.ac);r.style.setProperty("--ht",dk?v.mut:v.acx);r.style.setProperty("--hf",dk?v.ac:v.acx);r.style.setProperty("--hbd",dk?v.ln:"transparent");r.style.setProperty("--hbig",dk?v.ink:v.acx);r.style.setProperty("--htr",dk?v.ln:"rgba(127,127,127,.35)");r.style.colorScheme=dk?"dark":"light";var m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.bg}
+function applyTheme(){var dk=isDark(),v=curPal()[dk?"d":"l"],r=document.documentElement;for(var k in v)r.style.setProperty("--"+k,v[k]);r.style.setProperty("--exp",dk?"#fb923c":"#c2410c");r.style.setProperty("--inc",dk?"#4ade80":"#15803d");r.style.setProperty("--hb",dk?v.sf:v.ac);r.style.setProperty("--ht",dk?v.mut:v.acx);r.style.setProperty("--hf",dk?v.ac:v.acx);r.style.setProperty("--hbd",dk?v.ln:"transparent");r.style.setProperty("--hbig",dk?v.ink:v.acx);r.style.setProperty("--htr",dk?v.ln:"rgba(127,127,127,.35)");r.style.colorScheme=dk?"dark":"light";var m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.bg}
 function setTheme(k,v){TH[k]=v;try{localStorage.setItem("bv-theme",JSON.stringify(TH))}catch(e){}applyTheme();render()}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(TH.mode==="auto"){applyTheme();render()}})}catch(e){}
 applyTheme();
+function hex(r,g,b){return"#"+[r,g,b].map(function(x){return("0"+Math.round(x).toString(16)).slice(-2)}).join("")}
+function parseHex(s){s=String(s||"").trim().replace(/^#/,"");if(/^[0-9a-f]{3}$/i.test(s))s=s.replace(/./g,"$&$&");return/^[0-9a-f]{6}$/i.test(s)?[0,2,4].map(function(i){return parseInt(s.substr(i,2),16)}):null}
+function hsv2rgb(h,s,v){var f=function(n){var k=(n+h/60)%6;return v-v*s*Math.max(0,Math.min(k,4-k,1))};return[f(5)*255,f(3)*255,f(1)*255]}
+function rgb2hsv(r,g,b){r/=255;g/=255;b/=255;var mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;if(d){if(mx===r)h=60*(((g-b)/d+6)%6);else if(mx===g)h=60*((b-r)/d+2);else h=60*((r-g)/d+4)}return{h:h,s:mx?d/mx:0,v:mx}}
+function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;var mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2,h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));if(mx===r)h=60*(((g-b)/d+6)%6);else if(mx===g)h=60*((b-r)/d+2);else h=60*((r-g)/d+4)}return{h:h,s:s*100,l:l*100}}
+function hsl2hex(h,s,l){s/=100;l/=100;var a=s*Math.min(l,1-l),f=function(n){var k=(n+h/30)%12;return 255*(l-a*Math.max(-1,Math.min(k-3,9-k,1)))};return hex(f(0),f(8),f(4))}
+function lumOf(c){var q=c.map(function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*q[0]+.7152*q[1]+.0722*q[2]}
+function onCol(hx){var L=lumOf(parseHex(hx));return(1.05/(L+.05))>=((L+.05)/.05)?"#ffffff":"#161616"}
+function customPal(hx){var c=parseHex(hx)||[15,118,110],o=rgb2hsl(c[0],c[1],c[2]),h=o.h,k=Math.min(1,o.s/40),ad=o.l<58?hsl2hex(h,Math.max(o.s,45),62):hx;
+return{n:"Personnalisé",l:{bg:hsl2hex(h,26*k,94),sf:"#ffffff",ink:hsl2hex(h,45*k,14),mut:hsl2hex(h,16*k,40),ln:hsl2hex(h,22*k,86),ac:hx,acx:onCol(hx)},d:{bg:hsl2hex(h,32*k,8),sf:hsl2hex(h,28*k,12),ink:hsl2hex(h,35*k,92),mut:hsl2hex(h,18*k,62),ln:hsl2hex(h,24*k,22),ac:ad,acx:onCol(ad)}}}
+function curPal(){return TH.pal==="custom"?customPal(TH.custom||"#0f766e"):PAL[TH.pal]}
+var CP={h:170,s:.85,v:.55,x:null};
+function cpRGB(){return hsv2rgb(CP.h,CP.s,CP.v).map(Math.round)}
+function cpSync(skip){var r=cpRGB(),hx=CP.x||hex(r[0],r[1],r[2]);$("#cpsv").style.background="linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl("+CP.h+",100%,50%))";$("#cpsvk").style.left=CP.s*100+"%";$("#cpsvk").style.top=(1-CP.v)*100+"%";$("#cphk").style.left=CP.h/360*100+"%";var hc=hsv2rgb(CP.h,1,1);$("#cphk").style.background=hex(hc[0],hc[1],hc[2]);
+if(skip!=="rgb"){$("#cr").value=r[0];$("#cg").value=r[1];$("#cb").value=r[2]}if(skip!=="hex"){$("#cx").value=hx;$("#cx").classList.remove("bad")}
+var v=isDark()?customPal(hx).d:customPal(hx).l,p=$("#cpp");p.style.cssText="background:"+v.bg+";color:"+v.ink+";border-color:"+v.ln;p.innerHTML='<b>Aperçu</b><span style="background:'+v.ac+';color:'+v.acx+'">Bouton</span><i style="background:'+v.ac+'"></i>'}
+function cpDrag(el,fn){var mv=function(e){var r=el.getBoundingClientRect();CP.x=null;fn(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)));cpSync()};el.addEventListener("pointerdown",function(e){e.preventDefault();try{el.setPointerCapture(e.pointerId)}catch(x){}mv(e);el.onpointermove=mv});["pointerup","pointercancel"].forEach(function(n){el.addEventListener(n,function(){el.onpointermove=null})})}
+function cpFromRGB(){var v=["cr","cg","cb"].map(function(i){return Math.max(0,Math.min(255,parseInt($("#"+i).value)||0))}),o=rgb2hsv(v[0],v[1],v[2]);CP.s=o.s;CP.v=o.v;if(o.s>0&&o.v>0)CP.h=o.h;CP.x=hex(v[0],v[1],v[2]);cpSync("rgb")}
+function cpFromHex(s){var c=parseHex(s);if(!c){$("#cx").classList.add("bad");return}var o=rgb2hsv(c[0],c[1],c[2]);CP.s=o.s;CP.v=o.v;if(o.s>0&&o.v>0)CP.h=o.h;CP.x=hex(c[0],c[1],c[2]);cpSync("hex")}
+function cpApply(){var r=cpRGB();TH.pal="custom";TH.custom=CP.x||hex(r[0],r[1],r[2]);try{localStorage.setItem("bv-theme",JSON.stringify(TH))}catch(e){}applyTheme();closeSh();render()}
+function colorPicker(){var c=parseHex(TH.custom||"")||parseHex(curPal().l.ac)||[15,118,110],o=rgb2hsv(c[0],c[1],c[2]);CP={h:o.h,s:o.s,v:o.v,x:null};form={};
+sheet('<h2 style="margin-top:0">Couleur personnalisée</h2><div id="cpsv" class="cpsv"><i id="cpsvk" class="cpk"></i></div><div id="cph" class="cph"><i id="cphk" class="cpk"></i></div><div class="row3"><div><label>R</label><input id="cr" inputmode="numeric" oninput="cpFromRGB()" autocomplete="off"></div><div><label>G</label><input id="cg" inputmode="numeric" oninput="cpFromRGB()" autocomplete="off"></div><div><label>B</label><input id="cb" inputmode="numeric" oninput="cpFromRGB()" autocomplete="off"></div></div><label>Hexadécimal</label><input id="cx" maxlength="7" autocapitalize="none" autocomplete="off" spellcheck="false" oninput="cpFromHex(this.value)"><div id="cpp" class="cpp"></div><div class="sec"><button class="btn" onclick="cpApply()">Appliquer</button><button class="btn s" onclick="tryClose()">Annuler</button></div>');
+cpDrag($("#cpsv"),function(x,y){CP.s=x;CP.v=1-y});cpDrag($("#cph"),function(x){CP.h=x*359.99});cpSync();base()}
 function themeCard(){
-  return '<h2>Apparence</h2><div class="card"><div class="seg">'+[["auto","Auto"],["light","Jour"],["dark","Nuit"]].map(function(a){return '<button class="'+(TH.mode===a[0]?"on":"")+'" onclick="setTheme(\'mode\',\''+a[0]+'\')">'+a[1]+'</button>'}).join("")+'</div><div class="sw">'+Object.keys(PAL).map(function(k){return '<button class="'+(TH.pal===k?"on":"")+'" style="background:'+PAL[k].l.ac+'" aria-label="'+PAL[k].n+'" title="'+PAL[k].n+'" onclick="setTheme(\'pal\',\''+k+'\')"></button>'}).join("")+'</div><div style="color:var(--mut);font-size:.85rem;margin-top:8px">Thème : '+PAL[TH.pal].n+'</div></div>';
+  return '<h2>Apparence</h2><div class="card"><div class="seg">'+[["auto","Auto"],["light","Jour"],["dark","Nuit"]].map(function(a){return '<button class="'+(TH.mode===a[0]?"on":"")+'" onclick="setTheme(\'mode\',\''+a[0]+'\')">'+a[1]+'</button>'}).join("")+'</div><div class="sw">'+Object.keys(PAL).map(function(k){return '<button class="'+(TH.pal===k?"on":"")+'" style="background:'+PAL[k].l.ac+'" aria-label="'+PAL[k].n+'" title="'+PAL[k].n+'" onclick="setTheme(\'pal\',\''+k+'\')"></button>'}).join("")+'<button class="'+(TH.pal==="custom"?"on":"")+'" style="background:'+(TH.pal==="custom"?curPal().l.ac:"conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)")+'" aria-label="Couleur personnalisée" title="Couleur personnalisée" onclick="colorPicker()"></button></div><div style="color:var(--mut);font-size:.85rem;margin-top:8px">Thème : '+(TH.pal==="custom"?"Personnalisé ("+TH.custom+")":PAL[TH.pal].n)+' · le dernier cercle ouvre le sélecteur de couleur</div></div>';
 }
-var VER="v0.1",LOG=[],LOGV=false,LF="all",LOGT=null;
+var VER="v1",LOG=[],LOGV=false,LF="all",LOGT=null;
 try{LOG=JSON.parse(localStorage.getItem("bv-log"))||[]}catch(e){}
 function log(c,m,l){LOG.push({t:Date.now(),c:c,m:String(m),l:l||""});if(LOG.length>400)LOG=LOG.slice(-400);clearTimeout(LOGT);LOGT=setTimeout(function(){try{localStorage.setItem("bv-log",JSON.stringify(LOG))}catch(e){}},600);if(LOGV&&tab==="set")logView()}
 window.addEventListener("error",function(e){log("erreur",e.message||"erreur","err")});
