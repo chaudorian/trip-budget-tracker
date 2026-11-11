@@ -15,7 +15,7 @@ Un seul fichier d'application (`index.html`), sans compilation ni serveur.
 - Export et import d'un voyage et de ses transactions au format CSV (onglet Voyages).
 - Liste des transactions : recherche par intitulé mise à jour à la frappe et filtres par type (dépense ou revenu), catégorie et personne.
 - Dashboard organisé en sections (vue d'ensemble, dépenses dans le temps, catégories, par personne) avec les équivalents en euros.
-- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 6 thèmes de couleur (dont Citron) et une couleur personnalisée choisie avec un sélecteur (spectre, valeurs RGB ou hexadécimal)), version de l'appli (v1) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
+- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 6 thèmes de couleur (dont Citron) et une couleur personnalisée choisie avec un sélecteur (spectre, valeurs RGB ou hexadécimal)), version de l'appli (v1.1) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
 - Les formulaires ne se ferment pas sans confirmation si des données ont été saisies.
 
 ## Mise en ligne avec GitHub Pages
@@ -69,6 +69,13 @@ L'appli échange elle-même le jeton reCAPTCHA contre un jeton App Check (sans l
 ## Notifications
 Quand une autre personne ajoute, modifie ou supprime une transaction sur un voyage partagé (ou modifie le voyage), l'appli affiche un message et ajoute une entrée dans la cloche de l'onglet Voyages, avec une pastille de messages non lus. Une alerte du système peut s'y ajouter (Paramètres > Notifications), via `sw.js`.
 Les notifications ne sont détectées que lorsque l'appli est ouverte ou en arrière-plan, au rythme de la synchronisation (environ 30 secondes). Elles n'arrivent pas si l'appli est fermée : cela demanderait un serveur d'envoi (Firebase Cloud Messaging et Cloud Functions, plan payant).
+
+## Mode hors connexion
+- Un service worker (`sw.js`) garde l'appli et le graphique en cache : après une première ouverture en ligne, l'appli se charge et fonctionne sans réseau. Les données sont déjà enregistrées sur l'appareil.
+- Sans connexion, une bannière « Mode hors connexion » s'affiche, avec le nombre de modifications en attente. Les transactions d'un voyage partagé créées ou modifiées hors ligne portent la mention « En attente de synchronisation ».
+- Au retour du réseau, la synchronisation repart automatiquement. Les transactions concernées affichent « Synchronisée » environ 5 secondes, puis la mention disparaît.
+- Les suppressions faites hors ligne sont envoyées à la reconnexion et comptées dans la bannière.
+- Les voyages non partagés n'ont rien à synchroniser.
 
 ## Données
 Les données sont enregistrées dans le navigateur du téléphone (localStorage). Rien n'est envoyé au dépôt.
