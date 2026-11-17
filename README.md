@@ -79,6 +79,9 @@ Les notifications ne sont détectées que lorsque l'appli est ouverte ou en arri
 - Les suppressions faites hors ligne sont envoyées à la reconnexion et comptées dans la bannière.
 - Les voyages non partagés n'ont rien à synchroniser.
 
+## Bouton retour (Android et iOS)
+Le bouton ou le geste retour ferme d'abord la popup ouverte (avec la confirmation habituelle s'il y a une saisie en cours), puis revient de la page Paramètres ou Notifications à l'onglet d'où elle a été ouverte (Voyages, Transactions ou Dashboard). Depuis un onglet, il quitte l'appli comme d'habitude.
+
 ## Données
 Les données sont enregistrées dans le navigateur du téléphone (localStorage). Rien n'est envoyé au dépôt.
 Elles ne sont pas synchronisées entre appareils et disparaissent si tu vides les données du site.
