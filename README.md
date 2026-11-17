@@ -13,9 +13,9 @@ Un seul fichier d'application (`index.html`), sans compilation ni serveur.
 - Suivi par personne (option par voyage) : choix de la personne à chaque transaction et statistiques par personne dans le dashboard.
 - Sélection de plusieurs transactions pour les supprimer.
 - Export et import d'un voyage et de ses transactions au format CSV (onglet Voyages).
-- Liste des transactions : recherche par intitulé mise à jour à la frappe et filtres par type (dépense ou revenu), catégorie et personne.
+- Liste des transactions : recherche par intitulé mise à jour à la frappe, filtres par type (dépense ou revenu), catégorie et personne, et sous-total des transactions filtrées (dépenses, revenus et solde, avec l'équivalent en euros). Les notes ne sont affichées que dans la fiche de la transaction.
 - Dashboard organisé en sections (vue d'ensemble, dépenses dans le temps, catégories, par personne) avec les équivalents en euros.
-- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 6 thèmes de couleur (dont Citron) et une couleur personnalisée choisie avec un sélecteur (spectre, valeurs RGB ou hexadécimal)), version de l'appli (v1.1) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
+- Page Paramètres (engrenage, onglet Voyages) : apparence (mode auto, jour ou nuit et 6 thèmes de couleur (dont Citron) et une couleur personnalisée choisie avec un sélecteur (spectre, valeurs RGB ou hexadécimal)), version de l'appli (v1.2) et console des logs (requêtes, transactions, voyages, synchronisation, erreurs) avec filtres, copie et effacement.
 - Les formulaires ne se ferment pas sans confirmation si des données ont été saisies.
 
 ## Mise en ligne avec GitHub Pages
@@ -67,8 +67,10 @@ Le badge reCAPTCHA est masqué ; la mention de protection est affichée dans le 
 L'appli échange elle-même le jeton reCAPTCHA contre un jeton App Check (sans le SDK Firebase) ; en cas d'échec, le message d'erreur de Google s'affiche.
 
 ## Notifications
-Quand une autre personne ajoute, modifie ou supprime une transaction sur un voyage partagé (ou modifie le voyage), l'appli affiche un message et ajoute une entrée dans la cloche de l'onglet Voyages, avec une pastille de messages non lus. Une alerte du système peut s'y ajouter (Paramètres > Notifications), via `sw.js`.
-Les notifications ne sont détectées que lorsque l'appli est ouverte ou en arrière-plan, au rythme de la synchronisation (environ 30 secondes). Elles n'arrivent pas si l'appli est fermée : cela demanderait un serveur d'envoi (Firebase Cloud Messaging et Cloud Functions, plan payant).
+Quand une autre personne ajoute, modifie ou supprime une transaction sur un voyage partagé, modifie le voyage ou rejoint le voyage (invitation acceptée), l'appli affiche un message (toucher le message ouvre la page Notifications) et ajoute une entrée dans la cloche, visible dans l'en-tête des onglets Voyages, Transactions et Dashboard. Les notifications sont marquées comme lues dès qu'on ouvre la page.
+Avec un prénom renseigné dans Paramètres > Ton prénom, les messages indiquent qui a fait le changement (« Ana a ajouté une dépense : … »).
+Une alerte du système peut s'y ajouter (Paramètres > Notifications), avec un bouton d'envoi de notification de test, via `sw.js`.
+Les notifications ne sont détectées que lorsque l'appli est ouverte ou en arrière-plan, au rythme de la synchronisation (environ 30 secondes). Elles n'arrivent pas si l'appli est fermée : cela demanderait un serveur d'envoi (Web Push avec Firebase Cloud Messaging ou un autre service).
 
 ## Mode hors connexion
 - Un service worker (`sw.js`) garde l'appli et le graphique en cache : après une première ouverture en ligne, l'appli se charge et fonctionne sans réseau. Les données sont déjà enregistrées sur l'appareil.
